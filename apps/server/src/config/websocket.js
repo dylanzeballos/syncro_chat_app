@@ -1,30 +1,26 @@
-import { handleConnection } from "../handlers/websocket.handler.js";
-import { verifyToken } from "../middleware/auth.middleware.js";
+import { Server } from "socket.io";
 import logger from "../utils/logger.js";
 
-export const setupWebSocket = (io) => {
-  io.use(async (socket, next) => {
-    try {
-      const token =
-        socket.handshake.auth.token || socket.handshake.headers.authorization;
-
-      if (!token) {
-        logger.warn("WebSocket connection attempt without token");
-        return next();
-      }
-
-      const user = await verifyToken(token);
-      socket.user = user;
-      next();
-    } catch (error) {
-      logger.error("WebSocket auth error:", error.message);
-      next(new Error("Authentication failed"));
-    }
+export const initializeWebSocket = (httpServer) => {
+  const io = new Server(httpServer, {
+    cors: {
+      origin: process.env.CLIENT_URL || "http://localhost:5173",
+      credentials: true,
+    },
   });
 
   io.on("connection", (socket) => {
-    handleConnection(io, socket);
+    logger.info(`Client connected: ${socket.id}`);
+
+    socket.on("disconnect", () => {
+      logger.info(`Client disconnected: ${socket.id}`);
+    });
+
+    socket.on("error", (error) => {
+      logger.error("Socket error:", error);
+    });
   });
 
-  logger.success("WebSocket server configured");
+  logger.success("WebSocket server initialized");
+  return io;
 };
