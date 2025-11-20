@@ -17,16 +17,28 @@ export const Button = ({
   const baseStyles =
     "inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
 
+  const variantStyles = {
+    primary: { backgroundColor: "var(--color-primary)", color: "#fff" },
+    secondary: { backgroundColor: "var(--color-secondary)", color: "#fff" },
+    outline: { borderColor: "var(--color-300)", color: "var(--color-text)" },
+    ghost: { color: "var(--color-text)" },
+    danger: { backgroundColor: "#DC2626", color: "#fff" },
+    success: { backgroundColor: "#059669", color: "#fff" },
+    google: {
+      backgroundColor: "var(--color-surface)",
+      borderColor: "var(--color-300)",
+      color: "var(--color-text)",
+    },
+  };
+
   const variants = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
-    secondary: "bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500",
-    outline:
-      "border-2 border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500",
-    ghost: "text-gray-700 hover:bg-gray-100 focus:ring-gray-500",
-    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
-    success: "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500",
-    google:
-      "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-blue-500",
+    primary: "hover:opacity-90 focus:ring-2",
+    secondary: "hover:opacity-90 focus:ring-2",
+    outline: "border-2 hover:opacity-80 focus:ring-2",
+    ghost: "hover:opacity-80 focus:ring-2",
+    danger: "hover:opacity-90 focus:ring-2",
+    success: "hover:opacity-90 focus:ring-2",
+    google: "border hover:opacity-80 focus:ring-2",
   };
 
   const sizes = {
@@ -49,6 +61,7 @@ export const Button = ({
     <button
       type={type}
       className={buttonClasses}
+      style={variantStyles[variant]}
       disabled={disabled || loading}
       onClick={onClick}
       {...props}

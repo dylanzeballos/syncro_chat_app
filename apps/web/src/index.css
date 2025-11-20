@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+@theme {
+  --font-roboto: "Roboto", sans-serif;
+
+  /* Color Palette */
+  --color-50: #f1f9fa;
+  --color-100: #dbedf2;
+  --color-200: #bcdce5;
+  --color-300: #8ec2d2;
+  --color-400: #589fb8;
+  --color-500: #4392af;
+  --color-600: #356c85;
+  --color-700: #30586e;
+  --color-800: #2e4b5c;
+  --color-900: #2a404f;
+  --color-950: #182934;
+
+  /* Semantic Colors */
+  --color-primary: var(--color-500);
+  --color-primary-hover: var(--color-600);
+  --color-primary-light: var(--color-100);
+  --color-secondary: var(--color-700);
+  --color-accent: var(--color-400);
+  --color-background: var(--color-900);
+  --color-surface: var(--color-800);
+  --color-text: var(--color-100);
+  --color-text-muted: var(--color-600);
+}
+
+body {
+  font-family: var(--font-roboto);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+
+body {
+  transition: background-color 180ms ease, color 180ms ease;
+}
