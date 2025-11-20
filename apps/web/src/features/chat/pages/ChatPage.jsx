@@ -43,7 +43,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-background">
       {/* Sidebar Component */}
       <Sidebar
         user={user}
@@ -57,26 +57,26 @@ export default function ChatPage() {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         {loading ? (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-gray-500">Cargando...</div>
+          <div className="flex-1 flex items-center justify-center text-text-muted">
+            <div>Cargando...</div>
           </div>
         ) : error ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <p className="text-red-600 mb-2">{error}</p>
+              <p className="mb-2 text-red-600">{error}</p>
               <button
                 onClick={loadRooms}
-                className="text-blue-600 hover:underline text-sm"
+                className="hover:underline text-sm text-primary"
               >
                 Reintentar
               </button>
             </div>
           </div>
         ) : !selectedRoom ? (
-          <div className="flex-1 flex items-center justify-center text-gray-500">
+          <div className="flex-1 flex items-center justify-center text-text-muted">
             <div className="text-center">
               <p className="text-lg mb-2">Selecciona una sala para empezar</p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-400">
                 {rooms.length === 0
                   ? "Crea una sala nueva para comenzar a chatear"
                   : "Elige una sala del menú lateral"}
@@ -86,15 +86,17 @@ export default function ChatPage() {
         ) : (
           <div className="flex-1 flex flex-col">
             {/* TODO: Implementar vista de chat */}
-            <div className="p-4 border-b border-gray-200 bg-white">
-              <h2 className="text-lg font-semibold">{selectedRoom.name}</h2>
+            <div className="p-4 border-b border-200 bg-surface">
+              <h2 className="text-lg font-semibold text-text">
+                {selectedRoom.name}
+              </h2>
               {selectedRoom.description && (
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-text-muted">
                   {selectedRoom.description}
                 </p>
               )}
             </div>
-            <div className="flex-1 flex items-center justify-center text-gray-400">
+            <div className="flex-1 flex items-center justify-center text-400">
               Chat en construcción...
             </div>
           </div>
