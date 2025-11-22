@@ -60,8 +60,8 @@ const Sidebar = ({
           </div>
         </div>
 
-        {/* LISTA DE SALAS */}
-        <div className="flex-1 overflow-y-auto p-4">
+        {/* LISTA DE SALAS (scroll con estilo personalizado) */}
+        <div className="flex-1 px-4 overflow-y-auto custom-scroll">
           <RoomList
             rooms={rooms}
             currentRoom={currentRoom}
@@ -95,6 +95,24 @@ const Sidebar = ({
           />
         </div>
       </aside>
+
+      {/* ESTILOS INTERNOS */}
+      <style jsx>{`
+        /* Scroll minimalista tipo ChatGPT */
+        .custom-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.15);
+          border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.25);
+        }
+      `}</style>
     </>
   );
 };
