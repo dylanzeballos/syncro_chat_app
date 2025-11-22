@@ -1,107 +1,117 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../../auth/hooks/useAuth";
-import { chatAPI } from "../../../services/api";
-import { Sidebar } from "../../../components/layout/Sidebar";
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../auth/hooks/useAuth';
+import { useWebSocketWithQuery } from '../hooks/useWebSocketWithQuery';
+import { useRoomsQuery, useRoomMessagesQuery, useCreateRoomMutation, useJoinRoomMutation } from '../hooks/useRoomQueries';
+import { useInitAuth } from '../hooks/useInitAuth';
+import ChatWindow from '../components/ChatWindow';
+import CreateRoomModal from '../components/CreateRoomModal';
+import JoinRoomModal from '../components/JoinRoomModal';
+import EmptyState from '../components/EmptyState';
+import Sidebar from '../../../components/layout/Sidebar';
+import { LoadingSpinner } from '../../../components/icons';
 
-export default function ChatPage() {
-  const { user, signOut } = useAuth();
-  const [rooms, setRooms] = useState([]);
-  const [selectedRoom, setSelectedRoom] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const ChatPage = () => {
+  const { user, getValidToken, loading: authLoading, signOut } = useAuth();
+  const [token, setToken] = useState(null);
+  const [currentRoom, setCurrentRoom] = useState(null);
+  const [showCreateRoom, setShowCreateRoom] = useState(false);
+  const [showJoinRoom, setShowJoinRoom] = useState(false);
+
+  const { data: rooms = [], isLoading: roomsLoading, error: roomsError } = useRoomsQuery();
+  const { data: messages = [] } = useRoomMessagesQuery(currentRoom?.id);
+  const { mutate: createRoom, isPending: isCreating, error: createError } = useCreateRoomMutation();
+  const { mutate: joinRoomByCode, isPending: isJoining, error: joinError } = useJoinRoomMutation();
+
+  const { isConnected, joinRoom, leaveRoom, sendMessage, startTyping, stopTyping, typingUsers, onlineUsers } = useWebSocketWithQuery(token);
+
+  const { isSyncingUser } = useInitAuth({
+    user,
+    authLoading,
+    getValidToken,
+    setToken,
+    signOut,
+  });
 
   useEffect(() => {
-    if (user) {
-      loadRooms();
+    if (currentRoom && isConnected) {
+      joinRoom(currentRoom.id);
     }
-  }, [user]);
+    return () => {
+      if (currentRoom && isConnected) {
+        leaveRoom(currentRoom.id);
+      }
+    };
+  }, [currentRoom, isConnected, joinRoom, leaveRoom]);
 
-  const loadRooms = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await chatAPI.getRooms();
-      setRooms(data || []);
-    } catch (err) {
-      console.error("Error loading rooms:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (authLoading || roomsLoading || isSyncingUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <LoadingSpinner className="w-8 h-8 mx-auto mb-4" />
+        <p className="text-text-muted">Cargando...</p>
+      </div>
+    );
+  }
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-    } catch (err) {
-      console.error("Error signing out:", err);
-    }
-  };
-
-  const handleCreateRoom = () => {
-    console.log("Create room");
-  };
+  if (roomsError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <p className="text-error mb-2">Error cargando salas</p>
+          <p className="text-text-muted text-sm">{roomsError?.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar Component */}
-      <Sidebar
-        user={user}
-        rooms={rooms}
-        selectedRoom={selectedRoom}
-        onSelectRoom={setSelectedRoom}
-        onLogout={handleSignOut}
-        onCreateRoom={handleCreateRoom}
-      />
-
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
-        {loading ? (
-          <div className="flex-1 flex items-center justify-center text-text-muted">
-            <div>Cargando...</div>
-          </div>
-        ) : error ? (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <p className="mb-2 text-red-600">{error}</p>
-              <button
-                onClick={loadRooms}
-                className="hover:underline text-sm text-primary"
-              >
-                Reintentar
-              </button>
-            </div>
-          </div>
-        ) : !selectedRoom ? (
-          <div className="flex-1 flex items-center justify-center text-text-muted">
-            <div className="text-center">
-              <p className="text-lg mb-2">Selecciona una sala para empezar</p>
-              <p className="text-sm text-400">
-                {rooms.length === 0
-                  ? "Crea una sala nueva para comenzar a chatear"
-                  : "Elige una sala del menú lateral"}
-              </p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-background">
+      <div className="flex h-screen">
+        <Sidebar
+          user={user}
+          rooms={rooms}
+          currentRoom={currentRoom}
+          setCurrentRoom={setCurrentRoom}
+          setShowCreateRoom={setShowCreateRoom}
+          setShowJoinRoom={setShowJoinRoom}
+          isConnected={isConnected}
+          signOut={signOut}
+        />
+        {!currentRoom || rooms.length === 0 ? (
+          <EmptyState />
         ) : (
-          <div className="flex-1 flex flex-col">
-            {/* TODO: Implementar vista de chat */}
-            <div className="p-4 border-b border-200 bg-surface">
-              <h2 className="text-lg font-semibold text-text">
-                {selectedRoom.name}
-              </h2>
-              {selectedRoom.description && (
-                <p className="text-sm text-text-muted">
-                  {selectedRoom.description}
-                </p>
-              )}
-            </div>
-            <div className="flex-1 flex items-center justify-center text-400">
-              Chat en construcción...
-            </div>
-          </div>
+          <ChatWindow
+            room={currentRoom}
+            user={user}
+            messages={messages}
+            typingUsers={typingUsers}
+            onlineUsers={onlineUsers}
+            onSendMessage={sendMessage}
+            onTypingStart={startTyping}
+            onTypingStop={stopTyping}
+            isConnected={isConnected}
+          />
         )}
       </div>
+      {showCreateRoom && (
+        <CreateRoomModal
+          onClose={() => setShowCreateRoom(false)}
+          onCreate={createRoom}
+          isCreating={isCreating}
+          error={createError}
+          setCurrentRoom={setCurrentRoom}
+        />
+      )}
+      {showJoinRoom && (
+        <JoinRoomModal
+          onClose={() => setShowJoinRoom(false)}
+          onJoin={joinRoomByCode}
+          isJoining={isJoining}
+          error={joinError}
+          setCurrentRoom={setCurrentRoom}
+        />
+      )}
     </div>
   );
-}
+};
+
+export default ChatPage;
