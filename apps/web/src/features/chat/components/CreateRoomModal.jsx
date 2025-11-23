@@ -45,11 +45,13 @@ const CreateRoomModal = ({
             <textarea
               value={form.description}
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-              className="chat-form-input"
+              className="chat-form-input resize-none"
               placeholder="Descripción opcional"
               rows={3}
+              maxLength={500}
             />
-          </div>          
+          </div>
+          
           <div className="flex space-x-3 pt-4">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancelar
