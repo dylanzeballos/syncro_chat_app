@@ -49,19 +49,7 @@ const CreateRoomModal = ({
               placeholder="Descripción opcional"
               rows={3}
             />
-          </div>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="isPrivate"
-              checked={form.isPrivate}
-              onChange={e => setForm(f => ({ ...f, isPrivate: e.target.checked }))}
-              className="w-4 h-4 text-primary bg-background border-700 rounded focus:ring-primary"
-            />
-            <label htmlFor="isPrivate" className="ml-2 text-sm text-text">
-              Sala privada (solo por invitación)
-            </label>
-          </div>
+          </div>          
           <div className="flex space-x-3 pt-4">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancelar
