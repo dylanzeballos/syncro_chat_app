@@ -76,20 +76,16 @@ const ChatHeader = ({
 
       {room.description && (
         <div
-          className="mt-2 text-sm text-text-muted"
+          className="mt-2 text-sm text-text-muted truncate max-w-full"
+          style={{ maxWidth: '550px' }}
           title={room.description}
           onClick={handleOpenModal}
         >
           {room.description}
-          <style jsx>{`
-            div {
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-            }
-          `}</style>
         </div>
       )}
+
+
 
       {isModalOpen && <RoomInfoModal room={room} onClose={handleCloseModal} />}
     </div>
