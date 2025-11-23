@@ -89,16 +89,37 @@ export const useWebSocketWithQuery = (token) => {
       }
     };
 
+    const resolveDisplayName = (data, roomId) => {
+      if (!data) return 'Usuario';
+      if (data.username) return data.username;
+      // Try to find in members cache for the room
+      try {
+        if (roomId) {
+          const members = queryClient.getQueryData(['members', roomId]);
+          if (Array.isArray(members)) {
+            const m = members.find(member => member.users?.id === data.userId);
+            if (m) return m.users?.username || m.users?.email || `Usuario`;
+          }
+        }
+      } catch (err) {
+        console.debug('resolveDisplayName members lookup error', err);
+      }
+      return data.email || data.userId || 'Usuario';
+    };
+
     socket.on('user-joined', (data) => {
       if (data?.userId) {
         setOnlineUsers(prev => new Set([...prev, data.userId]));
 
+        const roomId = currentRoomRef.current;
+        const displayName = resolveDisplayName(data, roomId);
+
         const systemMessage = {
           id: `sys-${Date.now()}-${data.userId}`,
-          content: `${data.username || 'Usuario'} se unió`,
+          content: `${displayName} se unió`,
           message_type: 'system',
           created_at: data.timestamp || new Date().toISOString(),
-          users: { id: data.userId, username: data.username },
+          users: { id: data.userId, username: displayName },
         };
 
         appendSystemMessageToRoomQueries(systemMessage);
@@ -113,12 +134,15 @@ export const useWebSocketWithQuery = (token) => {
           return updated;
         });
 
+        const roomId = currentRoomRef.current;
+        const displayName = resolveDisplayName(data, roomId);
+
         const systemMessage = {
           id: `sys-${Date.now()}-${data.userId}`,
-          content: `${data.username || 'Usuario'} salió`,
+          content: `${displayName} salió`,
           message_type: 'system',
           created_at: data.timestamp || new Date().toISOString(),
-          users: { id: data.userId, username: data.username },
+          users: { id: data.userId, username: displayName },
         };
 
         appendSystemMessageToRoomQueries(systemMessage);
