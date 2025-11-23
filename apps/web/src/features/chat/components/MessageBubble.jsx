@@ -1,4 +1,4 @@
-import { CheckIcon, DoubleCheckIcon } from '../../../components/icons';
+// Se eliminó: import { CheckIcon, DoubleCheckIcon } from '../../../components/icons';
 
 const MessageBubble = ({
   message,
@@ -27,6 +27,7 @@ const MessageBubble = ({
     );
   }
 
+  // NOTA: la función aún existe (se eliminará en el cambio 3)
   const getStatusIcon = (status) => {
     switch (status) {
       case 'sending':
@@ -34,11 +35,11 @@ const MessageBubble = ({
           <div className="w-4 h-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
         );
       case 'sent':
-        return <CheckIcon className="w-4 h-4 text-text-muted" />;
+        return <></>;
       case 'delivered':
-        return <DoubleCheckIcon className="w-4 h-4 text-text-muted" />;
+        return <></>;
       case 'read':
-        return <DoubleCheckIcon className="w-4 h-4 text-primary" />;
+        return <></>;
       default:
         return null;
     }
@@ -81,8 +82,7 @@ const MessageBubble = ({
                   {formatTime(message.created_at || message.timestamp)}
                 </span>
 
-                {/* ✔ PRIMER CAMBIO: eliminamos el check */}
-                {/* {isOwn && getStatusIcon(message.status || 'sent')} */}
+                {/* check eliminado en commit anterior */}
               </div>
             </div>
           )}
