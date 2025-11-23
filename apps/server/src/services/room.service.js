@@ -29,7 +29,8 @@ export const getRooms = async (userId) => {
           name,
           description,
           is_private,
-          created_at
+          created_at,
+          code_room
         )
       `
       )

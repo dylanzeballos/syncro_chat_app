@@ -27,12 +27,16 @@ const RoomList = ({ rooms, currentRoom, onSelectRoom, onCopyCode }) => (
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{room.name || 'Sala sin nombre'}</p>
+                <p className="font-medium truncate">
+                  <strong>
+                  {room.name || 'Sala sin nombre'}
+                  </strong> 
+                </p>
                 {room.description && (
                   <p className="text-sm truncate opacity-70">{room.description}</p>
                 )}
                 <div className="flex items-center gap-1 mt-1">
-                  <p className="text-xs opacity-60">{room.code_room}</p>
+                  <p className="text-xs opacity-60 italic">{room.code_room}</p>
                   <button
                     onClick={e => {
                       e.stopPropagation();
