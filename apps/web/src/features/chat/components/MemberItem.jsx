@@ -9,7 +9,7 @@ export const MemberItem = ({ member, isOnline, currentUser }) => {
     }`}>
       <div className="relative shrink-0">
         <img
-          src={member.users.avatar_url || '/default-avatar.png'}
+          src={member.users.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3Cpath d='M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2'%3E%3C/path%3E%3C/svg%3E"}
           alt={member.users.username || 'Usuario'}
           className={`w-8 h-8 rounded-full object-cover border-2 ${
             isOnline ? 'border-primary' : 'border-600'
