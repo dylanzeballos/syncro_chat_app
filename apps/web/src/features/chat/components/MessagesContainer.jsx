@@ -10,7 +10,6 @@ const getMessageProps = (message, index, currentUser, allMessages) => {
 
   const showAvatar = !prevMessage || prevMessage.users?.id !== message.users?.id;
   
-  // ✔ Cambio 4: siempre mostrar la hora
   const showTimestamp = true;
 
   const isLastInGroup = !nextMessage || nextMessage.users?.id !== message.users?.id;

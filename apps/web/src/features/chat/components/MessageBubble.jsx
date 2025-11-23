@@ -14,7 +14,6 @@ const MessageBubble = ({
     });
   };
 
-  // Render system messages (join/leave labels) centered and simplified
   if (message?.message_type === 'system') {
     return (
       <div className="flex justify-center">
@@ -24,8 +23,6 @@ const MessageBubble = ({
       </div>
     );
   }
-
-  // ⛔ getStatusIcon fue eliminado en este cambio
 
   return (
     <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
@@ -63,8 +60,6 @@ const MessageBubble = ({
                 <span>
                   {formatTime(message.created_at || message.timestamp)}
                 </span>
-
-                {/* checks ya eliminados */}
               </div>
             </div>
           )}
