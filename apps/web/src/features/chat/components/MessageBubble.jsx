@@ -1,5 +1,3 @@
-import { CheckIcon, DoubleCheckIcon } from '../../../components/icons';
-
 const MessageBubble = ({
   message,
   isOwn = false,
@@ -16,7 +14,6 @@ const MessageBubble = ({
     });
   };
 
-  // Render system messages (join/leave labels) centered and simplified
   if (message?.message_type === 'system') {
     return (
       <div className="flex justify-center">
@@ -26,23 +23,6 @@ const MessageBubble = ({
       </div>
     );
   }
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'sending':
-        return (
-          <div className="w-4 h-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-        );
-      case 'sent':
-        return <CheckIcon className="w-4 h-4 text-text-muted" />;
-      case 'delivered':
-        return <DoubleCheckIcon className="w-4 h-4 text-text-muted" />;
-      case 'read':
-        return <DoubleCheckIcon className="w-4 h-4 text-primary" />;
-      default:
-        return null;
-    }
-  };
 
   return (
     <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
@@ -80,7 +60,6 @@ const MessageBubble = ({
                 <span>
                   {formatTime(message.created_at || message.timestamp)}
                 </span>
-                {isOwn && getStatusIcon(message.status || 'sent')}
               </div>
             </div>
           )}

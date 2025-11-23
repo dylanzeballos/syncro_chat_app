@@ -10,8 +10,7 @@ const getMessageProps = (message, index, currentUser, allMessages) => {
 
   const showAvatar = !prevMessage || prevMessage.users?.id !== message.users?.id;
   
-  const showTimestamp = !prevMessage || 
-    (new Date(message.created_at) - new Date(prevMessage.created_at)) > 5 * 60 * 1000;
+  const showTimestamp = true;
 
   const isLastInGroup = !nextMessage || nextMessage.users?.id !== message.users?.id;
 
@@ -38,7 +37,6 @@ const MessagesContainer = ({
     const seps = container.querySelectorAll('.day-separator');
     let current = null;
     seps.forEach((el) => {
-      // offsetTop is relative to the offsetParent (the scroll container)
       if (el.offsetTop <= scrollTop + 20) {
         current = el.dataset.day;
       }
@@ -48,7 +46,6 @@ const MessagesContainer = ({
   };
 
   useEffect(() => {
-    // initialize active day after messages render (defer to avoid sync update)
     const container = messagesContainerRef?.current;
     if (!container) return;
     const seps = container.querySelectorAll('.day-separator');
@@ -60,6 +57,7 @@ const MessagesContainer = ({
       }
     }, 0);
   }, [messages, messagesContainerRef]);
+
   const isSameDay = (d1, d2) => {
     return d1.getFullYear() === d2.getFullYear() &&
       d1.getMonth() === d2.getMonth() &&

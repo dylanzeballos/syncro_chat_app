@@ -60,7 +60,7 @@ const Sidebar = ({
           </div>
         </div>
 
-        {/* LISTA DE SALAS (scroll con estilo personalizado) */}
+        {/*scroll*/}
         <div className="flex-1 px-4 overflow-y-auto custom-scroll">
           <RoomList
             rooms={rooms}
@@ -70,7 +70,6 @@ const Sidebar = ({
           />
         </div>
 
-        {/* USER INFO ABAJO */}
         <div className="chat-user-info p-4 border-t border-white/10 flex items-center space-x-3">
           <img
             src={user.user_metadata?.avatar_url || "/default-avatar.png"}
@@ -96,9 +95,7 @@ const Sidebar = ({
         </div>
       </aside>
 
-      {/* ESTILOS INTERNOS */}
       <style jsx>{`
-        /* Scroll minimalista tipo ChatGPT */
         .custom-scroll::-webkit-scrollbar {
           width: 6px;
         }
