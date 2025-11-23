@@ -1,5 +1,5 @@
 import { Button } from '../../../components/ui/Button';
-import { UsersIcon, CopyIcon } from '../../../components/icons';
+import { UsersIcon } from '../../../components/icons';
 
 const ChatHeader = ({
   room,
@@ -7,7 +7,6 @@ const ChatHeader = ({
   memberCount,
   onlineCount,
   onShowMembers,
-  onCopyCode,
   membersLoading
 }) => {
   return (
@@ -71,26 +70,7 @@ const ChatHeader = ({
             }
           `}</style>
         </div>
-      )}
-
-
-      {room.code_room && (
-        <div className="mt-2 flex items-center space-x-2">
-          <span className="text-xs text-text-muted">Código:</span>
-          <div className="flex items-center space-x-1 bg-700 rounded px-2 py-1">
-            <code className="text-xs font-mono text-text">
-              {room.code_room}
-            </code>
-            <button
-              onClick={() => onCopyCode(room.code_room)}
-              className="p-1 hover:bg-opacity-20 hover:bg-white rounded transition-opacity"
-              title="Copiar código"
-            >
-              <CopyIcon className="w-3 h-3 text-text-muted hover:text-text" />
-            </button>
-          </div>
-        </div>
-      )}
+      )}   
     </div>
   );
 };
