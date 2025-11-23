@@ -1,4 +1,4 @@
-import { CopyIcon } from "../../../components/icons";
+import RoomItem from "./RoomItem";
 
 const RoomList = ({ rooms, currentRoom, onSelectRoom, onCopyCode }) => (
   <div>
@@ -12,41 +12,14 @@ const RoomList = ({ rooms, currentRoom, onSelectRoom, onCopyCode }) => (
       </div>
     ) : (
       <div className="space-y-2">
-        {rooms.map(room => (
-          <div
+        {rooms.map((room) => (
+          <RoomItem
             key={room.id}
-            className={`chat-room-item ${currentRoom?.id === room.id ? 'active' : ''}`}
-          >
-            <div
-              className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg w-full"
-              onClick={() => onSelectRoom(room)}
-            >
-              <div className={`chat-room-avatar ${currentRoom?.id === room.id ? 'active' : ''}`}>
-                <span className="text-white font-semibold text-sm">
-                  {room.name ? room.name.charAt(0).toUpperCase() : 'S'}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{room.name || 'Sala sin nombre'}</p>
-                {room.description && (
-                  <p className="text-sm truncate opacity-70">{room.description}</p>
-                )}
-                <div className="flex items-center gap-1 mt-1">
-                  <p className="text-xs opacity-60">{room.code_room}</p>
-                  <button
-                    onClick={e => {
-                      e.stopPropagation();
-                      onCopyCode(room.code_room);
-                    }}
-                    className="p-1 hover:bg-opacity-20 hover:bg-white rounded text-xs opacity-60 hover:opacity-100 transition-opacity"
-                    title="Copiar código"
-                  >
-                    <CopyIcon className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+            room={room}
+            currentRoom={currentRoom}
+            onSelectRoom={onSelectRoom}
+            onCopyCode={onCopyCode}
+          />
         ))}
       </div>
     )}
