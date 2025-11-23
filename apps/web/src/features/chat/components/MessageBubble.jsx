@@ -16,6 +16,17 @@ const MessageBubble = ({
     });
   };
 
+  // Render system messages (join/leave labels) centered and simplified
+  if (message?.message_type === 'system') {
+    return (
+      <div className="flex justify-center">
+        <div className="text-sm text-text-muted italic py-2">
+          {message.content}
+        </div>
+      </div>
+    );
+  }
+
   const getStatusIcon = (status) => {
     switch (status) {
       case 'sending':

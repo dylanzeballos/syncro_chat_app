@@ -25,6 +25,28 @@ const MessagesContainer = ({
   typingUsers,
   messagesEndRef,
 }) => {
+  const isSameDay = (d1, d2) => {
+    return d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
+  };
+
+  const formatDayLabel = (date) => {
+    if (!date) return '';
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    if (isSameDay(date, today)) return 'Hoy';
+    if (isSameDay(date, yesterday)) return 'Ayer';
+
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
+
   return (
     <div
       ref={messagesContainerRef}
@@ -43,20 +65,39 @@ const MessagesContainer = ({
           </div>
         </div>
       ) : (
-        messages.map((message, index) => {
-          const { isOwn, showAvatar, showTimestamp, isLastInGroup } = getMessageProps(message, index, user, messages);
+        (() => {
+          const nodes = [];
+          let lastDayLabel = null;
 
-          return (
-            <div key={message.id || message.tempId} className={isLastInGroup ? 'mb-4' : 'mb-1'}>
-              <MessageBubble
-                message={message}
-                isOwn={isOwn}
-                showAvatar={showAvatar}
-                showTimestamp={showTimestamp}
-              />
-            </div>
-          );
-        })
+          messages.forEach((message, index) => {
+            const msgDate = message.created_at ? new Date(message.created_at) : (message.timestamp ? new Date(message.timestamp) : null);
+            const dayLabel = msgDate ? formatDayLabel(msgDate) : null;
+
+            if (dayLabel && dayLabel !== lastDayLabel) {
+              nodes.push(
+                <div key={`day-${dayLabel}-${index}`} className="flex justify-center">
+                  <div className="text-sm text-text-muted py-2">{dayLabel}</div>
+                </div>
+              );
+              lastDayLabel = dayLabel;
+            }
+
+            const { isOwn, showAvatar, showTimestamp, isLastInGroup } = getMessageProps(message, index, user, messages);
+
+            nodes.push(
+              <div key={message.id || message.tempId} className={isLastInGroup ? 'mb-4' : 'mb-1'}>
+                <MessageBubble
+                  message={message}
+                  isOwn={isOwn}
+                  showAvatar={showAvatar}
+                  showTimestamp={showTimestamp}
+                />
+              </div>
+            );
+          });
+
+          return nodes;
+        })()
       )}
 
       <TypingIndicator typingUsers={typingUsers} />
