@@ -14,7 +14,6 @@ const Sidebar = ({
 }) => {
   const handleRoomSelect = (room) => setCurrentRoom(room);
   const copyRoomCode = (code) => navigator.clipboard?.writeText(code);
-  console.log('el usuario:',user)
   return (
     <>
       <aside className="chat-sidebar flex flex-col h-full">
