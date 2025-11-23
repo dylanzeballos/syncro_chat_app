@@ -61,10 +61,18 @@ const ChatHeader = ({
       </div>
 
       {room.description && (
-        <div className="mt-2 text-sm text-text-muted">
+        <div className="mt-2 text-sm text-text-muted" title={room.description}>
           {room.description}
+          <style jsx>{`
+            div {
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          `}</style>
         </div>
       )}
+
 
       {room.code_room && (
         <div className="mt-2 flex items-center space-x-2">

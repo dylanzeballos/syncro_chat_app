@@ -14,7 +14,6 @@ const Sidebar = ({
 }) => {
   const handleRoomSelect = (room) => setCurrentRoom(room);
   const copyRoomCode = (code) => navigator.clipboard?.writeText(code);
-
   return (
     <>
       <aside className="chat-sidebar flex flex-col h-full">
@@ -72,16 +71,17 @@ const Sidebar = ({
 
         <div className="chat-user-info p-4 border-t border-white/10 flex items-center space-x-3">
           <img
-            src={user.user_metadata?.avatar_url || "/default-avatar.png"}
+            src={user.user_metadata?.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3Cpath d='M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2'%3E%3C/path%3E%3C/svg%3E"}
             alt={user.user_metadata?.full_name || user.email}
             className="chat-avatar"
           />
+
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-text truncate">
-              {user.user_metadata?.full_name || user.email}
+              {user.user_metadata?.full_name || user.user_metadata?.username}
             </p>
             <p className="text-xs text-text-muted truncate">
-              {user.email}
+              {user.email || 'Usuario invitado'}
             </p>
           </div>
           <Button

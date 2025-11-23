@@ -24,7 +24,7 @@
   --color-background: var(--color-900);
   --color-surface: var(--color-800);
   --color-text: var(--color-100);
-  --color-text-muted: var(--color-600);
+  --color-text-muted: var(--color-500);
 }
 
 body {
