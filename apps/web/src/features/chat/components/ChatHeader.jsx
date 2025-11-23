@@ -1,5 +1,7 @@
-import { Button } from '../../../components/ui/Button';
-import { UsersIcon } from '../../../components/icons';
+import { useState } from "react";
+import { Button } from "../../../components/ui/Button";
+import { UsersIcon } from "../../../components/icons";
+import RoomInfoModal from "./RoomInfoModal";
 
 const ChatHeader = ({
   room,
@@ -9,14 +11,25 @@ const ChatHeader = ({
   onShowMembers,
   membersLoading
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="bg-surface border-b px-6 py-4" style={{ borderColor: 'var(--color-700)' }}>
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="relative">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center"
+              className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
               style={{ backgroundColor: 'var(--color-primary)' }}
+              onClick={handleOpenModal}
             >
               <span className="text-text font-semibold text-sm">
                 {room.name ? room.name.charAt(0).toUpperCase() : 'S'}
@@ -25,7 +38,9 @@ const ChatHeader = ({
           </div>
 
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-text">{room.name || 'Sala sin nombre'}</h2>
+            <h2 className="text-lg font-semibold text-text" onClick={handleOpenModal}>
+              {room.name || 'Sala sin nombre'}
+            </h2>
             <div className="flex items-center text-sm text-text-muted">
               {isConnected ? (
                 <span className="flex items-center">
@@ -60,7 +75,11 @@ const ChatHeader = ({
       </div>
 
       {room.description && (
-        <div className="mt-2 text-sm text-text-muted" title={room.description}>
+        <div
+          className="mt-2 text-sm text-text-muted"
+          title={room.description}
+          onClick={handleOpenModal}
+        >
           {room.description}
           <style jsx>{`
             div {
@@ -70,7 +89,9 @@ const ChatHeader = ({
             }
           `}</style>
         </div>
-      )}   
+      )}
+
+      {isModalOpen && <RoomInfoModal room={room} onClose={handleCloseModal} />}
     </div>
   );
 };
