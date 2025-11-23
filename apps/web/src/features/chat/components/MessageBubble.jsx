@@ -80,7 +80,9 @@ const MessageBubble = ({
                 <span>
                   {formatTime(message.created_at || message.timestamp)}
                 </span>
-                {isOwn && getStatusIcon(message.status || 'sent')}
+
+                {/* ✔ PRIMER CAMBIO: eliminamos el check */}
+                {/* {isOwn && getStatusIcon(message.status || 'sent')} */}
               </div>
             </div>
           )}
