@@ -9,7 +9,9 @@ const ChatHeader = ({
   memberCount,
   onlineCount,
   onShowMembers,
-  membersLoading
+  membersLoading,
+  onLeave,
+  isLeaving,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -87,7 +89,7 @@ const ChatHeader = ({
 
 
 
-      {isModalOpen && <RoomInfoModal room={room} onClose={handleCloseModal} />}
+      {isModalOpen && <RoomInfoModal room={room} onClose={handleCloseModal} onLeave={onLeave} isLeaving={isLeaving} />}
     </div>
   );
 };
