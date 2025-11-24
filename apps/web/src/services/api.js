@@ -1,64 +1,97 @@
-// API service to communicate with backend
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+import axios from 'axios';
+import { supabase } from '../config/supabase';
 
-// Helper para obtener el token de autenticación
-const getAuthToken = async () => {
-  const { supabase } = await import('../config/supabase');
-  const { data: { session } } = await supabase.auth.getSession();
-  return session?.access_token;
-};
+const API_BASE_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3000';
 
-// Helper para hacer requests autenticados
-const authFetch = async (url, options = {}) => {
-  const token = await getAuthToken();
-  
-  if (!token) {
-    throw new Error('No authentication token');
+const getValidToken = async () => {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+
+    if (error || !session?.access_token) {
+      throw new Error('No hay sesión válida');
+    }
+
+    const expiresAt = session.expires_at * 1000;
+    const now = Date.now();
+    const oneMinute = 60 * 1000;
+
+    if (expiresAt - now < oneMinute) {
+      const { data: { session: newSession }, error: refreshError } = await supabase.auth.refreshSession();
+
+      if (refreshError || !newSession?.access_token) {
+        throw new Error('Error refrescando token');
+      }
+
+      return newSession.access_token;
+    }
+
+    return session.access_token;
+  } catch (error) {
+    console.error('Error obteniendo token:', error);
+    throw error;
   }
+};
 
-  const response = await fetch(`${API_URL}${url}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-      ...options.headers,
-    },
-  });
+const apiClient = axios.create({
+  baseURL: `${API_BASE_URL}/api`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: response.statusText }));
-    throw new Error(error.error || 'Request failed');
+apiClient.interceptors.request.use(
+  async (config) => {
+    try {
+      const token = await getValidToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (error) {
+      console.error('Error en interceptor de request:', error);
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
+);
 
-  return response.json();
+apiClient.interceptors.response.use(
+  (response) => response.data,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        await getValidToken();
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        console.error('Error refrescando token:', refreshError);
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
+    }
+
+    const message = error.response?.data?.message || error.message || 'Error en la solicitud';
+    const transformedError = new Error(message);
+    transformedError.status = error.response?.status;
+    transformedError.originalError = error;
+
+    return Promise.reject(transformedError);
+  }
+);
+
+const api = {
+  get: (url, config = {}) => apiClient.get(url, config),
+  post: (url, data = {}, config = {}) => apiClient.post(url, data, config),
+  put: (url, data = {}, config = {}) => apiClient.put(url, data, config),
+  patch: (url, data = {}, config = {}) => apiClient.patch(url, data, config),
+  delete: (url, config = {}) => apiClient.delete(url, config),
 };
 
-// Auth API
-export const authAPI = {
-  verifyToken: () => authFetch('/auth/verify'),
-  getCurrentUser: () => authFetch('/auth/me'),
-  updateStatus: (status) => authFetch('/auth/status', {
-    method: 'PUT',
-    body: JSON.stringify({ status }),
-  }),
-};
 
-// Chat API
-export const chatAPI = {
-  // Obtener rooms del usuario
-  getRooms: () => authFetch('/chat/rooms'),
-  
-  // Obtener mensajes de un room
-  getMessages: (roomId, limit = 50, offset = 0) => 
-    authFetch(`/chat/rooms/${roomId}/messages?limit=${limit}&offset=${offset}`),
-  
-  // Obtener miembros de un room
-  getMembers: (roomId) => authFetch(`/chat/rooms/${roomId}/members`),
-  
-  // Enviar mensaje
-  sendMessage: (roomId, content, messageType = 'text') => 
-    authFetch(`/chat/rooms/${roomId}/messages`, {
-      method: 'POST',
-      body: JSON.stringify({ content, messageType }),
-    }),
-};
+
+export { apiClient };
+export default api;

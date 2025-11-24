@@ -26,3 +26,5 @@ export const authMiddleware = async (req, res, next) => {
     res.status(401).json({ error: "Invalid or expired token" });
   }
 };
+
+export const authenticateSocket = authMiddleware;

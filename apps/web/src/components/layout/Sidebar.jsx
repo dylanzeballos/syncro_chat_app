@@ -1,168 +1,117 @@
-import { useState } from "react";
-import { HamburgerIcon, CloseIcon, ChatIcon, LogoutIcon, PlusIcon } from "../icons";
-import { Button } from "../ui";
+import { Button } from "../ui/Button";
+import { LogoutIcon, PlusIcon } from "../icons";
+import RoomList from "../../features/chat/components/RoomList";
 
-export const Sidebar = ({ 
-  user, 
-  rooms = [], 
-  selectedRoom, 
-  onSelectRoom, 
-  onLogout,
-  onCreateRoom 
+const Sidebar = ({
+  user,
+  rooms,
+  currentRoom,
+  setCurrentRoom,
+  setShowCreateRoom,
+  setShowJoinRoom,
+  isConnected,
+  signOut,
 }) => {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-
-  const toggleMobile = () => setIsMobileOpen(!isMobileOpen);
-  const closeMobile = () => setIsMobileOpen(false);
-
-  const handleRoomClick = (room) => {
-    onSelectRoom(room);
-    closeMobile();
-  };
-
-  const sidebarContent = (
-    <>
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-bold text-gray-900">Syncro</h1>
-          <button
-            onClick={toggleMobile}
-            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
-          >
-            <CloseIcon className="w-5 h-5" />
-          </button>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-            <span className="text-sm font-semibold text-blue-600">
-              {user?.user_metadata?.username?.charAt(0).toUpperCase() || 
-               user?.email?.charAt(0).toUpperCase() || 
-               'U'}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
-              {user?.user_metadata?.username || user?.email || 'Usuario'}
-            </p>
-            <p className="text-xs text-gray-500">
-              {user?.user_metadata?.is_guest ? 'Invitado' : 'Online'}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Rooms List */}
-      <div className="flex-1 overflow-y-auto p-4">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-            Salas
-          </h2>
-          {onCreateRoom && (
-            <button
-              onClick={onCreateRoom}
-              className="p-1 hover:bg-gray-100 rounded transition-colors"
-              title="Crear sala"
-            >
-              <PlusIcon className="w-4 h-4 text-gray-600" />
-            </button>
-          )}
-        </div>
-
-        {rooms.length === 0 ? (
-          <div className="text-center py-8">
-            <ChatIcon className="w-12 h-12 mx-auto text-gray-300 mb-2" />
-            <p className="text-sm text-gray-500">No hay salas</p>
-            <p className="text-xs text-gray-400 mt-1">Crea una para empezar</p>
-          </div>
-        ) : (
-          <ul className="space-y-1">
-            {rooms.map((room) => (
-              <li key={room.id}>
-                <button
-                  onClick={() => handleRoomClick(room)}
-                  className={`w-full text-left p-3 rounded-lg transition-colors ${
-                    selectedRoom?.id === room.id
-                      ? 'bg-blue-50 text-blue-700 font-medium'
-                      : 'hover:bg-gray-50 text-gray-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <ChatIcon className="w-5 h-5 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{room.name}</p>
-                      {room.description && (
-                        <p className="text-xs text-gray-500 truncate">
-                          {room.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
-        <Button
-          type="button"
-          variant="outline"
-          fullWidth
-          icon={LogoutIcon}
-          onClick={onLogout}
-        >
-          Cerrar sesión
-        </Button>
-      </div>
-    </>
-  );
-
+  const handleRoomSelect = (room) => setCurrentRoom(room);
+  const copyRoomCode = (code) => navigator.clipboard?.writeText(code);
   return (
     <>
-      <button
-        onClick={toggleMobile}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md hover:bg-gray-50"
-      >
-        <HamburgerIcon className="w-6 h-6 text-gray-700" />
-      </button>
+      <aside className="chat-sidebar flex flex-col h-full">
 
-      {isMobileOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-transparent bg-opacity-50 z-40"
-          onClick={closeMobile}
-        />
-      )}
+        {/* HEADER */}
+        <div className="chat-header p-4 pb-2">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-xl font-bold text-text">Syncro Chat</h1>
 
-      <aside className="hidden lg:flex lg:flex-col w-80 bg-white border-r border-gray-200">
-        {sidebarContent}
+            <div className="flex items-center space-x-2">
+              <div
+                className={
+                  isConnected
+                    ? "chat-status-connected"
+                    : "chat-status-disconnected"
+                }
+              />
+              <span className="text-sm text-text-muted">
+                {isConnected ? "Conectado" : "Desconectado"}
+              </span>
+            </div>
+          </div>
+
+          {/* Botones */}
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => setShowCreateRoom(true)}
+              variant="primary"
+              size="sm"
+              className="flex-1"
+              icon={PlusIcon}
+            >
+              Crear Sala
+            </Button>
+            <Button
+              onClick={() => setShowJoinRoom(true)}
+              variant="outline"
+              size="sm"
+              className="flex-1"
+            >
+              Unirse a Sala
+            </Button>
+          </div>
+        </div>
+
+        {/*scroll*/}
+        <div className="flex-1 px-4 overflow-y-auto custom-scroll">
+          <RoomList
+            rooms={rooms}
+            currentRoom={currentRoom}
+            onSelectRoom={handleRoomSelect}
+            onCopyCode={copyRoomCode}
+          />
+        </div>
+
+        <div className="chat-user-info p-4 border-t border-white/10 flex items-center space-x-3">
+          <img
+            src={user.user_metadata?.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3Cpath d='M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2'%3E%3C/path%3E%3C/svg%3E"}
+            alt={user.user_metadata?.full_name || user.email}
+            className="chat-avatar"
+          />
+
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-text truncate">
+              {user.user_metadata?.full_name || user.user_metadata?.username}
+            </p>
+            <p className="text-xs text-text-muted truncate">
+              {user.email || 'Usuario invitado'}
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={signOut}
+            icon={LogoutIcon}
+            className="chat-icon-button"
+            title="Cerrar sesión"
+          />
+        </div>
       </aside>
 
-      {/* Sidebar Mobile */}
-      <aside
-        className={`lg:hidden fixed top-0 left-0 bottom-0 w-80 bg-white shadow-xl z-50 flex flex-col transform transition-transform duration-300 ${
-          isMobileOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        {sidebarContent}
-      </aside>
+      <style jsx>{`
+        .custom-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.15);
+          border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.25);
+        }
+      `}</style>
     </>
   );
 };
 
-Sidebar.propTypes = {
-  user: {
-    user_metadata: {
-      username: String,
-      is_guest: Boolean,
-    },
-    email: String,
-  },
-  rooms: Array,
-  selectedRoom: Object,
-  onSelectRoom: Function,
-  onLogout: Function,
-  onCreateRoom: Function,
-};
+export default Sidebar;

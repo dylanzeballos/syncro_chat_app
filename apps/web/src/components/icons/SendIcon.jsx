@@ -1,16 +1,9 @@
 export const SendIcon = ({ className = "w-5 h-5" }) => (
   <svg
     className={className}
-    fill="none"
-    stroke="currentColor"
+    fill="currentColor"
     viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
   >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-    />
+    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
   </svg>
 );

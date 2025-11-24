@@ -9,8 +9,8 @@ export default function AuthCallback() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-xl">Autenticando...</div>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-xl text-text">Autenticando...</div>
     </div>
   );
 }
