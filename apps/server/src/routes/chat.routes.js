@@ -26,4 +26,10 @@ router.post(
   chatController.sendMessage
 );
 
+router.delete(
+  "/rooms/:roomId/members",
+  authMiddleware,
+  chatController.leaveRoom
+);
+
 export default router;

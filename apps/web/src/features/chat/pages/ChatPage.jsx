@@ -80,16 +80,18 @@ const ChatPage = () => {
           <EmptyState />
         ) : (
           <ChatWindow
-            room={currentRoom}
-            user={user}
-            messages={messages}
-            typingUsers={typingUsers}
-            onlineUsers={onlineUsers}
-            onSendMessage={sendMessage}
-            onTypingStart={startTyping}
-            onTypingStop={stopTyping}
-            isConnected={isConnected}
-          />
+              room={currentRoom}
+              user={user}
+              messages={messages}
+              typingUsers={typingUsers}
+              onlineUsers={onlineUsers}
+              onSendMessage={sendMessage}
+              onTypingStart={startTyping}
+              onTypingStop={stopTyping}
+              isConnected={isConnected}
+              leaveRoomSocket={leaveRoom}
+              setCurrentRoom={setCurrentRoom}
+            />
         )}
       </div>
       {showCreateRoom && (
