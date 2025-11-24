@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { GoogleButton, GuestButton } from "../../../components/auth";
 import { Divider } from "../../../components/ui";
-import reactLogo from "../../../assets/react.svg";
+import syncroLogo from "../../../assets/syncroLogoWhite.png";
 
 export default function LoginPage() {
   const [error, setError] = useState("");
@@ -12,7 +12,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="mx-auto w-20 h-20 mb-4 flex items-center justify-center">
             <img
-              src={reactLogo}
+              src={syncroLogo}
               alt="Syncro Logo"
               className="w-full h-full object-contain"
             />
