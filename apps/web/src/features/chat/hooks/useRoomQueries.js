@@ -70,6 +70,25 @@ export const useJoinRoomMutation = () => {
   });
 };
 
+export const useLeaveRoomMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (roomId) => {
+      const res = await roomAPI.leaveRoom(roomId);
+      return res;
+    },
+    onSuccess: (_data, roomId) => {
+      // Invalidate queries related to this room and refresh rooms list
+      queryClient.invalidateQueries({ queryKey: ['rooms'] });
+      queryClient.invalidateQueries({ queryKey: ['members', roomId] });
+      queryClient.invalidateQueries({ queryKey: ['messages', roomId] });
+      // Remove room from cache
+      queryClient.setQueryData(['rooms'], (old = []) => (old || []).filter(r => r.id !== roomId));
+    },
+  });
+};
+
 export const useAddMessageToCache = () => {
   const queryClient = useQueryClient();
 

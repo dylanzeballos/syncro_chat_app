@@ -97,3 +97,22 @@ export const getRoomMembers = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch room members" });
   }
 };
+
+export const leaveRoom = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const userId = req.user.id;
+
+    const hasAccess = await chatService.checkRoomAccess(userId, roomId);
+    if (!hasAccess) {
+      return res.status(403).json({ message: 'Access denied to this room' });
+    }
+
+    await chatService.removeMember(roomId, userId);
+
+    res.json({ success: true });
+  } catch (error) {
+    logger.error('Error leaving room:', error.message);
+    res.status(500).json({ message: 'Failed to leave room' });
+  }
+};

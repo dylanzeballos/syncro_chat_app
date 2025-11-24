@@ -89,3 +89,20 @@ export const createRoom = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const leaveRoom = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+
+    const hasAccess = await chatService.checkRoomAccess(req.user.id, roomId);
+    if (!hasAccess) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    await chatService.removeMember(roomId, req.user.id);
+
+    return res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

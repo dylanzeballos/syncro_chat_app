@@ -13,5 +13,6 @@ router.post("/join/:code", authenticateSocket, roomController.joinRoom);
 router.get("/:roomId/messages", authenticateSocket, roomController.getRoomMessages);
 
 router.get("/:roomId/members", authenticateSocket, roomController.getRoomMembers);
+router.delete("/:roomId/members", authenticateSocket, roomController.leaveRoom);
 
 export default router;

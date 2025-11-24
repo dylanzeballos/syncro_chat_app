@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { useRoomMembersQuery } from '../hooks/useRoomQueries';
+import { useRoomMembersQuery, useLeaveRoomMutation } from '../hooks/useRoomQueries';
 import { Button } from '../../../components/ui/Button';
 import { ScrollDownIcon } from '../../../components/icons';
 import EmptyState from './EmptyState';
@@ -18,6 +18,8 @@ const ChatWindow = ({
   onTypingStart,
   onTypingStop,
   isConnected = false,
+  leaveRoomSocket,
+  setCurrentRoom,
 }) => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -25,6 +27,7 @@ const ChatWindow = ({
   const [showMemberList, setShowMemberList] = useState(false);
 
   const { data: members = [], isLoading: membersLoading } = useRoomMembersQuery(room?.id);
+  const leaveRoomMutation = useLeaveRoomMutation();
 
   const onlineCount = members.filter(m => onlineUsers.has(m.users.id)).length;
 
@@ -72,6 +75,33 @@ const ChatWindow = ({
   const handleShowMembers = () => setShowMemberList(true);
   const handleCloseMemberList = () => setShowMemberList(false);
 
+  const handleLeaveGroup = async () => {
+    try {
+      await leaveRoomMutation.mutateAsync(room.id);
+      // emit socket leave to notify others
+      if (typeof leaveRoomSocket === 'function') {
+        leaveRoomSocket(room.id);
+      }
+      // clear current room to go back to rooms list
+      if (typeof setCurrentRoom === 'function') setCurrentRoom(null);
+    } catch (err) {
+      console.error('Error leaving room', err);
+      const serverMsg = err?.originalError?.response?.data?.error || err?.message || 'No se pudo salir de la sala.';
+      // show message but still attempt to leave the UI so user isn't stuck
+      alert(`${serverMsg} Intentando salir localmente...`);
+
+      try {
+        if (typeof leaveRoomSocket === 'function') {
+          leaveRoomSocket(room.id);
+        }
+      } catch (socketErr) {
+        console.error('Error emitting leave-room after API failure', socketErr);
+      }
+
+      if (typeof setCurrentRoom === 'function') setCurrentRoom(null);
+    }
+  };
+
   if (!room) {
     return <EmptyState />;
   }
@@ -88,6 +118,8 @@ const ChatWindow = ({
         onShowMembers={handleShowMembers}
         onCopyCode={() => copyRoomCode(room.code_room)}
         membersLoading={membersLoading}
+        onLeave={handleLeaveGroup}
+        isLeaving={leaveRoomMutation.isLoading}
       />
 
       <MessagesContainer

@@ -7,6 +7,7 @@ const SOCKET_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3000';
 export const useWebSocketWithQuery = (token) => {
   const socketRef = useRef(null);
   const typingTimeoutRef = useRef({});
+  const currentRoomRef = useRef(null);
   const queryClient = useQueryClient();
   const [isConnected, setIsConnected] = useState(false);
   const [typingUsers, setTypingUsers] = useState({});
@@ -60,9 +61,68 @@ export const useWebSocketWithQuery = (token) => {
       });
     });
 
+    const appendSystemMessageToRoomQueries = (systemMessage) => {
+      try {
+        const roomId = currentRoomRef.current;
+        if (roomId) {
+          const key = ['messages', roomId];
+          queryClient.setQueryData(key, (oldData) => [
+            ...(oldData || []),
+            systemMessage,
+          ]);
+          return;
+        }
+
+        // Fallback: append to any messages query available
+        const allQueries = queryClient.getQueryCache().getAll();
+        allQueries.forEach(q => {
+          const key = q.queryKey;
+          if (Array.isArray(key) && key[0] === 'messages') {
+            queryClient.setQueryData(key, (oldData) => [
+              ...(oldData || []),
+              systemMessage,
+            ]);
+          }
+        });
+      } catch (err) {
+        console.error('Error appending system message to queries:', err);
+      }
+    };
+
+    const resolveDisplayName = (data, roomId) => {
+      if (!data) return 'Usuario';
+      if (data.username) return data.username;
+      // Try to find in members cache for the room
+      try {
+        if (roomId) {
+          const members = queryClient.getQueryData(['members', roomId]);
+          if (Array.isArray(members)) {
+            const m = members.find(member => member.users?.id === data.userId);
+            if (m) return m.users?.username || m.users?.email || `Usuario`;
+          }
+        }
+      } catch (err) {
+        console.debug('resolveDisplayName members lookup error', err);
+      }
+      return data.email || data.userId || 'Usuario';
+    };
+
     socket.on('user-joined', (data) => {
       if (data?.userId) {
         setOnlineUsers(prev => new Set([...prev, data.userId]));
+
+        const roomId = currentRoomRef.current;
+        const displayName = resolveDisplayName(data, roomId);
+
+        const systemMessage = {
+          id: `sys-${Date.now()}-${data.userId}`,
+          content: `${displayName} se unió`,
+          message_type: 'system',
+          created_at: data.timestamp || new Date().toISOString(),
+          users: { id: data.userId, username: displayName },
+        };
+
+        appendSystemMessageToRoomQueries(systemMessage);
       }
     });
 
@@ -73,6 +133,19 @@ export const useWebSocketWithQuery = (token) => {
           updated.delete(data.userId);
           return updated;
         });
+
+        const roomId = currentRoomRef.current;
+        const displayName = resolveDisplayName(data, roomId);
+
+        const systemMessage = {
+          id: `sys-${Date.now()}-${data.userId}`,
+          content: `${displayName} salió`,
+          message_type: 'system',
+          created_at: data.timestamp || new Date().toISOString(),
+          users: { id: data.userId, username: displayName },
+        };
+
+        appendSystemMessageToRoomQueries(systemMessage);
       }
     });
 
@@ -125,12 +198,14 @@ export const useWebSocketWithQuery = (token) => {
   const joinRoom = useCallback((roomId) => {
     if (socketRef.current?.connected) {
       socketRef.current.emit('join-room', roomId);
+      currentRoomRef.current = roomId;
     }
   }, []);
 
   const leaveRoom = useCallback((roomId) => {
     if (socketRef.current?.connected) {
       socketRef.current.emit('leave-room', roomId);
+      if (currentRoomRef.current === roomId) currentRoomRef.current = null;
     }
   }, []);
 

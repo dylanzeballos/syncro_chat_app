@@ -29,7 +29,8 @@ export const getRooms = async (userId) => {
           name,
           description,
           is_private,
-          created_at
+          created_at,
+          code_room
         )
       `
       )
@@ -145,6 +146,23 @@ export const joinRoomByCode = async (code, userId) => {
     return room;
   } catch (error) {
     logger.error("Error joining room by code:", error.message);
+    throw error;
+  }
+};
+
+export const removeMember = async (roomId, userId) => {
+  try {
+    const { error } = await supabase
+      .from('room_members')
+      .delete()
+      .eq('room_id', roomId)
+      .eq('user_id', userId);
+
+    if (error) throw error;
+
+    return true;
+  } catch (error) {
+    logger.error('Error removing member from room:', error.message);
     throw error;
   }
 };

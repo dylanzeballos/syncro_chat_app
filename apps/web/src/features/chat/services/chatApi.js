@@ -6,6 +6,7 @@ export const roomAPI = {
   joinRoom: (code) => api.post(`/rooms/join/${code}`),
   getMessages: (roomId, params = {}) => api.get(`/rooms/${roomId}/messages`, { params }),
   getMembers: (roomId) => api.get(`/rooms/${roomId}/members`),
+  leaveRoom: (roomId) => api.delete(`/rooms/${roomId}/members`),
 };
 
 export const messageAPI = {
