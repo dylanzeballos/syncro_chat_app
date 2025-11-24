@@ -43,10 +43,6 @@ export default function LoginPage() {
           />
         </div>
 
-        <p className="mt-6 text-center text-xs text-text-muted">
-          Continuando, aceptas nuestros Términos de Servicio y Política de
-          Privacidad
-        </p>
       </div>
     </div>
   );
