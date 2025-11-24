@@ -3,27 +3,29 @@
 @theme {
   --font-roboto: "Roboto", sans-serif;
 
-  --color-50: #f1f9fa;
-  --color-100: #dbedf2;
+  --color-50: #FFFFFF;
+  --color-100: #2a4c7c;
   --color-200: #bcdce5;
   --color-300: #8ec2d2;
-  --color-400: #589fb8;
-  --color-500: #4392af;
-  --color-600: #356c85;
-  --color-700: #30586e;
-  --color-800: #2e4b5c;
-  --color-900: #2a404f;
-  --color-950: #182934;
+  --color-400: #6c8cd5;
+  --color-500: #94a3b8;
+  --color-600: #24498a;
+  --color-700: #1e3a6b;
+  --color-800: #132440;
+  --color-900: #0b152a;
+  --color-950: #d946ef;
+
 
   /* Semantic Colors */
-  --color-primary: var(--color-500);
+  --color-primary: var(--color-700);
   --color-primary-hover: var(--color-600);
   --color-primary-light: var(--color-100);
-  --color-secondary: var(--color-700);
+  --color-secondary: var(--color-800);
   --color-accent: var(--color-400);
   --color-background: var(--color-900);
   --color-surface: var(--color-800);
-  --color-text: var(--color-100);
+  --color-surface-light: var(--color-700);
+  --color-text: var(--color-50);
   --color-text-muted: var(--color-500);
 }
 
@@ -33,8 +35,7 @@ body {
   color: var(--color-text);
 }
 
-
-body {
+body{
   transition: background-color 180ms ease, color 180ms ease;
 }
 
@@ -54,7 +55,7 @@ body {
 
 .chat-avatar {
   @apply w-10 h-10 rounded-full object-cover border-2;
-  border-color: var(--color-600);
+  border-color: var(--color-700);
 }
 
 .chat-button-primary {
@@ -69,7 +70,7 @@ body {
 
 .chat-button-secondary {
   @apply px-3 py-2 text-sm border rounded-lg transition-colors;
-  border-color: var(--color-600);
+  border-color: var(--color-700);
   color: var(--color-text-muted);
 }
 
@@ -80,10 +81,11 @@ body {
 
 .chat-room-item {
   @apply w-full text-left rounded-lg transition-colors border;
+  border-color: transparent;
 }
 
 .chat-room-item:hover {
-  background-color: var(--color-700);
+  background-color: var(--color-surface-light);
 }
 
 .chat-room-item.active {
@@ -94,7 +96,7 @@ body {
 
 .chat-room-avatar {
   @apply w-10 h-10 rounded-full flex items-center justify-center;
-  background-color: var(--color-600);
+  background-color: var(--color-700);
 }
 
 .chat-room-avatar.active {
@@ -106,13 +108,13 @@ body {
 }
 
 .chat-message-bubble.own {
-  background-color: var(--color-primary);
+  background-color: var(--color-950);
   color: var(--color-text);
   @apply rounded-br-sm;
 }
 
 .chat-message-bubble.other {
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-light);
   color: var(--color-text);
   @apply rounded-bl-sm border;
   border-color: var(--color-700);
@@ -125,7 +127,7 @@ body {
 
 .chat-input {
   @apply flex items-end rounded-2xl border focus-within:ring-1;
-  background-color: var(--color-background);
+  background-color: var(--color-900);
   border-color: var(--color-700);
 }
 
@@ -167,7 +169,7 @@ body {
 }
 
 .chat-send-button.inactive {
-  background-color: var(--color-600);
+  background-color: var(--color-800);
   color: var(--color-text-muted);
   @apply cursor-not-allowed;
 }
@@ -207,7 +209,7 @@ body {
 
 .chat-typing-indicator {
   @apply px-6 py-2;
-  background-color: var(--color-surface);
+  background-color: var(--color-800);
 }
 
 .chat-error {
